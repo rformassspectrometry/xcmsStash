@@ -35,6 +35,10 @@ result objects from the *xcms* Bioconductor package.
 ### ✅ Plain Text (`PlainTextParam`)
 - Tab-delimited export/import for key objects.
 
+## Supported *xcms* result objects
+
+- `XcmsExperiment`
+
 ---
 
 ## Contributing

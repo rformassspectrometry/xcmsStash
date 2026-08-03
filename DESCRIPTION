@@ -31,7 +31,8 @@ Imports:
     alabaster.matrix,
     jsonlite,
     alabaster.base,
-    methods
+    methods,
+    utils
 Suggests:
     BiocStyle,
     SpectraStash,

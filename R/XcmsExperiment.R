@@ -16,12 +16,12 @@
 #'
 #' @section *alabaster*-based format, `AlabasterParam`:
 #'
-#' This stash format is the most complete and reliable way for long-term
-#' (and portable) storage of an `XcmsExperiment`. Objects can be saved or read
-#' from this stash format either using the `saveMsObject()` and `readMsObject()`
-#' functions together with an `AlabasterParam` object or also using the
-#' [alabaster.base::saveObject()] and [alabaster.base::readObject()] functions
-#' from the *alabaster.base* package.
+#' This alabster stash format is the most complete and reliable way for
+#' long-term (and portable) storage of an `XcmsExperiment`. Objects can be
+#' saved or read from this stash format either using the `saveMsObject()`
+#' and `readMsObject()` functions together with an `AlabasterParam` object
+#' or also using the [alabaster.base::saveObject()] and
+#' [alabaster.base::readObject()] functions from the *alabaster.base* package.
 #' The alabaster stash format for `XcmsExperiment` extends the
 #' [MsExperimentStash::MsExperimentStash]. Storage of the object's MS data and
 #' sample information is handled by the functions of the
@@ -40,6 +40,29 @@
 #'   format.
 #' - *xcms_experiment_process_history.json*: the object's `processHistory()`
 #'   serialized as a JSON object.
+#'
+#' @section Text file-based format, `PlainTextParam`:
+#'
+#' `saveMsObject()`/`readMsObject()` with `PlainTextParam` allows to save and
+#' read *xcms* result objects from a text file-based stash. All preprocessing
+#' results are stored in separate tabulator delimited text files. Each of these
+#' files has the row names (representing either the chromatographic peak IDs or
+#' feature IDs) written as first column and the column names as first row. The
+#' files grouped by preprocessing result are:
+#'
+#' - Chromatographic peak detection results are stored in
+#'   *xcms_experiment_chrom_peaks.txt* (`chromPeaks()`) and
+#'   *xcms_experiment_chrom_peak_data.txt* (`chromPeakData()`).
+#' - Correspondence results: the definitions of the LC-MS features
+#'   (`featureDefinitions()`) are stored to
+#'   *xcms_experiment_feature_definitions.txt* (one row per feature) and the
+#'   assignment between chromatographic peaks and features (the `$peakidx`
+#'   column of `featureDefinitions()`) to
+#'   *xcms_experiment_feature_peak_index.txt*, with one row for each mapping
+#'   of a chromatographic peak to a feature. These files are not created (or
+#'   present in the stash) if no correspondence analysis was performed.
+#' - The processing history (`processHistory()`) is stored in JSON format to
+#'   *xcms_experiment_process_history.json*.
 #'
 #' @note
 #'
@@ -104,6 +127,37 @@ NULL
 ##    PlainTextParam
 ################################################################################
 
+#' @rdname XcmsExperimentStash
+#'
+#' @importFrom xcms hasFeatures
+setMethod("saveMsObject", signature(object = "XcmsExperiment",
+                                    param = "PlainTextParam"),
+          function(object, param, ...) {
+              callNextMethod()
+              ## Always writing chrom peaks and process history
+              .txt_write_chrom_peaks(object, param@path)
+              .write_process_history(object, param@path)
+              if (hasFeatures(object))
+                  .txt_write_features(object, param@path)
+          })
+
+#' @rdname XcmsExperimentStash
+setMethod("readMsObject", signature(object = "XcmsExperiment",
+                                    param = "PlainTextParam"),
+          function(object, param, ...) {
+              res <- as(callNextMethod(), "XcmsExperiment")
+              .check_directory_content(
+                  param@path, c("xcms_experiment_chrom_peaks.txt",
+                                "xcms_experiment_process_history.json"))
+              res <- .txt_load_chrom_peaks(res, param@path)
+              res <- .load_process_history(res, param@path)
+              if (file.exists(file.path(
+                  param@path, "xcms_experiment_feature_definitions.txt")))
+                  res <- .txt_load_features(res, param@path)
+              validObject(res)
+              res
+          })
+
 ################################################################################
 ##    AlabasterParam
 ################################################################################
@@ -126,7 +180,7 @@ setMethod("saveObject", "XcmsExperiment", function(x, path, ...) {
     altSaveObject(x@chromPeaks, file.path(path, "chrom_peaks"))
     altSaveObject(x@chromPeakData, file.path(path, "chrom_peak_data"))
     altSaveObject(x@featureDefinitions, file.path(path, "feature_definitions"))
-    .export_process_history(x, path)
+    .write_process_history(x, path)
     info <- readObjectFile(path)
     info$contains <- "ms_experiment"
     saveObjectFile(path, "xcms_experiment", info)
@@ -148,7 +202,7 @@ readAlabasterXcmsExperiment <- function(path = character(), metadata = list(),
     metadata$type <- "ms_experiment"
     res <- altReadObject(path, metadata = metadata, ...)
     res <- as(res, "XcmsExperiment")
-    res <- .import_process_history(res, path)
+    res <- .load_process_history(res, path)
     res@chromPeaks <- as.matrix(altReadObject(file.path(path, "chrom_peaks")))
     res@chromPeakData <- as.data.frame(
         altReadObject(file.path(path, "chrom_peak_data")))

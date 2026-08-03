@@ -1,17 +1,3 @@
-library(xcms)
-library(Spectra)
-library(SpectraStash)
-library(MsExperiment)
-library(alabaster.base)
-xmse <- loadXcmsData()
-## Fix
-xmse@processHistory <- lapply(xmse@processHistory, function(z) {
-    z@param <- updateObject(z@param)
-    z
-})
-xmseg_filt <- filterMzRange(xmse, c(200, 500))
-xmseg_filt <- filterRt(xmseg_filt, c(3000, 4000))
-
 test_that("saveObject,XcmsExperiment works", {
     d <- file.path(tempdir(), "xmse_stash")
 
@@ -70,5 +56,78 @@ test_that("saveMsObject,readMsObject,XcmsExperiment,AlabasterParam", {
     mse <- readMsObject(MsExperiment(), AlabasterParam(d))
     expect_s4_class(mse, "MsExperiment")
 
+    unlink(d, recursive = TRUE)
+
+    ## No features
+    ref <- dropFeatureDefinitions(xmseg_filt)
+    expect_no_error(saveMsObject(ref, AlabasterParam(d)))
+    res <- readMsObject(XcmsExperiment(), AlabasterParam(d))
+    expect_s4_class(res, "XcmsExperiment")
+    expect_equal(hasChromPeaks(res), hasChromPeaks(ref))
+    expect_equal(hasAdjustedRtime(res), hasAdjustedRtime(ref))
+    expect_equal(hasFeatures(res), hasFeatures(ref))
+    expect_equal(length(processHistory(res)), length(processHistory(ref)))
+    unlink(d, recursive = TRUE)
+
+    ## No chrom peaks
+    ref <- dropChromPeaks(ref)
+    expect_no_error(saveMsObject(ref, AlabasterParam(d)))
+    res <- readMsObject(XcmsExperiment(), AlabasterParam(d))
+    expect_s4_class(res, "XcmsExperiment")
+    expect_equal(hasChromPeaks(res), hasChromPeaks(ref))
+    expect_equal(length(processHistory(res)), length(processHistory(ref)))
+    expect_equal(chromPeaks(res), chromPeaks(ref))
+    unlink(d, recursive = TRUE)
+})
+
+test_that("saveMsObject,readMsObject,XcmsExperiment,PlainTextParam work", {
+    d <- file.path(tempdir(), "xmse_txt_stash")
+
+    expect_no_error(saveMsObject(xmseg_filt, PlainTextParam(d)))
+    expect_true(all(c("xcms_experiment_chrom_peaks.txt",
+                      "xcms_experiment_chrom_peak_data.txt",
+                      "xcms_experiment_feature_definitions.txt",
+                      "xcms_experiment_feature_peak_index.txt",
+                      "xcms_experiment_process_history.json") %in% dir(d)))
+    res <- readMsObject(XcmsExperiment(), PlainTextParam(d))
+    expect_s4_class(res, "XcmsExperiment")
+    expect_equal(hasChromPeaks(res), hasChromPeaks(xmseg_filt))
+    expect_equal(hasAdjustedRtime(res), hasAdjustedRtime(xmseg_filt))
+    expect_equal(hasFeatures(res), hasFeatures(xmseg_filt))
+    expect_equal(length(processHistory(res)),
+                 length(processHistory(xmseg_filt)))
+    expect_equal(rtime(res), rtime(xmseg_filt))
+    expect_equal(chromPeaks(res), chromPeaks(xmseg_filt))
+    expect_equal(featureDefinitions(res), featureDefinitions(xmseg_filt))
+    unlink(d, recursive = TRUE)
+
+    ## No features
+    ref <- dropFeatureDefinitions(xmseg_filt)
+    expect_no_error(saveMsObject(ref, PlainTextParam(d)))
+    res <- readMsObject(XcmsExperiment(), PlainTextParam(d))
+    expect_s4_class(res, "XcmsExperiment")
+    expect_equal(hasChromPeaks(res), hasChromPeaks(ref))
+    expect_equal(hasAdjustedRtime(res), hasAdjustedRtime(ref))
+    expect_equal(hasFeatures(res), hasFeatures(ref))
+    expect_equal(length(processHistory(res)), length(processHistory(ref)))
+    expect_equal(chromPeaks(res), chromPeaks(ref))
+    expect_equal(featureDefinitions(res), featureDefinitions(ref))
+    unlink(d, recursive = TRUE)
+
+    ## No chrom peaks
+    ref <- dropChromPeaks(ref)
+    expect_no_error(saveMsObject(ref, PlainTextParam(d)))
+    res <- readMsObject(XcmsExperiment(), PlainTextParam(d))
+    expect_s4_class(res, "XcmsExperiment")
+    expect_equal(hasChromPeaks(res), hasChromPeaks(ref))
+    expect_equal(length(processHistory(res)), length(processHistory(ref)))
+    unlink(d, recursive = TRUE)
+
+    ## Passing of consolidate = TRUE
+    expect_no_error(saveMsObject(xmseg_filt, PlainTextParam(d),
+                                 consolidate = TRUE))
+    expect_true(all(c("KO", "WT") %in% dir(d)))
+    res <- readMsObject(XcmsExperiment(), PlainTextParam(d))
+    expect_equal(mz(spectra(res)), mz(spectra(xmseg_filt)))
     unlink(d, recursive = TRUE)
 })

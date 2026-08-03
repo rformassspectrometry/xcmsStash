@@ -2,11 +2,17 @@
 % Please edit documentation in R/XcmsExperiment.R
 \name{XcmsExperimentStash}
 \alias{XcmsExperimentStash}
+\alias{saveMsObject,XcmsExperiment,PlainTextParam-method}
+\alias{readMsObject,XcmsExperiment,PlainTextParam-method}
 \alias{saveObject,XcmsExperiment-method}
 \alias{saveMsObject,XcmsExperiment,AlabasterParam-method}
 \alias{readMsObject,XcmsExperiment,AlabasterParam-method}
 \title{\code{XcmsExperiment} Stash}
 \usage{
+\S4method{saveMsObject}{XcmsExperiment,PlainTextParam}(object, param, ...)
+
+\S4method{readMsObject}{XcmsExperiment,PlainTextParam}(object, param, ...)
+
 \S4method{saveObject}{XcmsExperiment}(x, path, ...)
 
 \S4method{saveMsObject}{XcmsExperiment,AlabasterParam}(object, param, ...)
@@ -14,9 +20,10 @@
 \S4method{readMsObject}{XcmsExperiment,AlabasterParam}(object, param, ...)
 }
 \arguments{
-\item{x}{A \code{XcmsExperiment} object.}
+\item{object}{A \code{XcmsExperiment} object.}
 
-\item{path}{For \code{saveObject()}:}
+\item{param}{The parameter object to select and configure the stash format.
+Either \link[MsStash:AlabasterParam]{MsStash::AlabasterParam} or \link[MsStash:PlainTextParam]{MsStash::PlainTextParam}.}
 
 \item{...}{For \code{saveMsObject()}: optional arguments passed down to the
 \code{saveMsObject()} function to stash the \code{Spectra} object (if present),
@@ -24,10 +31,9 @@ such as \code{consolidate}. For \code{readMsObject()}: optional arguments for th
 \code{readMsObject()} call to restore the \code{Spectra} object (such as
 \code{spectraPath}). See \link[SpectraStash:SpectraStash]{SpectraStash::SpectraStash} for more information.}
 
-\item{object}{A \code{XcmsExperiment} object.}
+\item{x}{A \code{XcmsExperiment} object.}
 
-\item{param}{The parameter object to select and configure the stash format.
-Either \link[MsStash:AlabasterParam]{MsStash::AlabasterParam} or \link[MsStash:PlainTextParam]{MsStash::PlainTextParam}.}
+\item{path}{For \code{saveObject()}:}
 }
 \description{
 \code{XcmsExperiment} \emph{xcms} result objects can be stored to (or read from)
@@ -46,12 +52,12 @@ Overwriting an existing \emph{XcmsExperimentStash} is not allowed.
 \section{\emph{alabaster}-based format, \code{AlabasterParam}}{
 
 
-This stash format is the most complete and reliable way for long-term
-(and portable) storage of an \code{XcmsExperiment}. Objects can be saved or read
-from this stash format either using the \code{saveMsObject()} and \code{readMsObject()}
-functions together with an \code{AlabasterParam} object or also using the
-\code{\link[alabaster.base:saveObject]{alabaster.base::saveObject()}} and \code{\link[alabaster.base:readObject]{alabaster.base::readObject()}} functions
-from the \emph{alabaster.base} package.
+This alabster stash format is the most complete and reliable way for
+long-term (and portable) storage of an \code{XcmsExperiment}. Objects can be
+saved or read from this stash format either using the \code{saveMsObject()}
+and \code{readMsObject()} functions together with an \code{AlabasterParam} object
+or also using the \code{\link[alabaster.base:saveObject]{alabaster.base::saveObject()}} and
+\code{\link[alabaster.base:readObject]{alabaster.base::readObject()}} functions from the \emph{alabaster.base} package.
 The alabaster stash format for \code{XcmsExperiment} extends the
 \link[MsExperimentStash:MsExperimentStash]{MsExperimentStash::MsExperimentStash}. Storage of the object's MS data and
 sample information is handled by the functions of the
@@ -70,6 +76,32 @@ HDF5 format.
 format.
 \item \emph{xcms_experiment_process_history.json}: the object's \code{processHistory()}
 serialized as a JSON object.
+}
+}
+
+\section{Text file-based format, \code{PlainTextParam}}{
+
+
+\code{saveMsObject()}/\code{readMsObject()} with \code{PlainTextParam} allows to save and
+read \emph{xcms} result objects from a text file-based stash. All preprocessing
+results are stored in separate tabulator delimited text files. Each of these
+files has the row names (representing either the chromatographic peak IDs or
+feature IDs) written as first column and the column names as first row. The
+files grouped by preprocessing result are:
+\itemize{
+\item Chromatographic peak detection results are stored in
+\emph{xcms_experiment_chrom_peaks.txt} (\code{chromPeaks()}) and
+\emph{xcms_experiment_chrom_peak_data.txt} (\code{chromPeakData()}).
+\item Correspondence results: the definitions of the LC-MS features
+(\code{featureDefinitions()}) are stored to
+\emph{xcms_experiment_feature_definitions.txt} (one row per feature) and the
+assignment between chromatographic peaks and features (the \verb{$peakidx}
+column of \code{featureDefinitions()}) to
+\emph{xcms_experiment_feature_peak_index.txt}, with one row for each mapping
+of a chromatographic peak to a feature. These files are not created (or
+present in the stash) if no correspondence analysis was performed.
+\item The processing history (\code{processHistory()}) is stored in JSON format to
+\emph{xcms_experiment_process_history.json}.
 }
 }
 
