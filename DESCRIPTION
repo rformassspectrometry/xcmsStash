@@ -43,7 +43,8 @@ Suggests:
     pkgload,
     callr,
     faahKO,
-    fs
+    fs,
+    knitr
 Remotes:
     RforMassSpectrometry/SpectraStash
     RforMassSpectrometry/MsExperimentStash

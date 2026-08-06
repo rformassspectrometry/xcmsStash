@@ -25,7 +25,7 @@ languages. The `r Biocpkg("MsStash")` package defines a basic framework to store
 and import mass spectrometry (MS) data objects in various storage formats aiming
 to simplify and facilitate data exchange between software. The *xcmsStash*
 package implements portable data storage formats (stashes) for result objects
-from Bioconductor's `r Biocpkp("xcms")` package. Supported stash formats are,
+from Bioconductor's `r Biocpkg("xcms")` package. Supported stash formats are,
 next to storage in simple plain text files, also Bioconductor's *alabaster*
 format defined in the `r Biocpkg("alabaster.base")` and related packages.
 
@@ -123,7 +123,7 @@ the stash as argument. In addition we need to define the expected result
 (return) object with the first parameter to `readMsObject()` (in our case an
 `XcmsExperiment()` object).
 
-```{r load-result}
+```{r load-result2}
 #' Restore the result object
 res <- readMsObject(XcmsExperiment(), AlabasterParam(d))
 res
@@ -196,7 +196,7 @@ will be much larger, depending on the number and size of the original MS data
 files.
 
 Finally, the *xcmsStash* package implements also the `saveObject()` and
-`readObject()` methods from the `r Biocpkg("alabaster.base"`)* package. Thus,
+`readObject()` methods from the `r Biocpkg("alabaster.base")` package. Thus,
 the full stash, or also selected parts of a result object can be read using
 these functions. Loading below for example the `Spectra` object of the *xcms*
 result object using *alabaster*'s `readObject()` function:
