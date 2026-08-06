@@ -46,7 +46,7 @@ Suggests:
     fs,
     knitr
 Remotes:
-    RforMassSpectrometry/SpectraStash
+    RforMassSpectrometry/SpectraStash,
     RforMassSpectrometry/MsExperimentStash
 License: GPL-3
 Encoding: UTF-8
