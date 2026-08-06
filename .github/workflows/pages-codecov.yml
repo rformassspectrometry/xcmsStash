@@ -111,6 +111,7 @@ jobs:
           BiocManager::install("RforMassSpectrometry/MsStash")
           BiocManager::install("RforMassSpectrometry/SpectraStash")
           BiocManager::install("RforMassSpectrometry/MsExperimentStash")
+          BiocManager::install("sneumann/xcms", ref = "chromatograms")
           pak::local_install_dev_deps(ask = FALSE)
 
           ## Pass #1 at installing dependencies
