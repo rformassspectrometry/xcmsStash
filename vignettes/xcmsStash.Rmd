@@ -1,0 +1,221 @@
+---
+title: "Safely Store xcms Result Objects in a Portable Stash"
+output:
+    BiocStyle::html_document:
+        toc_float: true
+vignette: >
+    %\VignetteIndexEntry{Safely Store xcms Result Object in a Portable Stash}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+    %\VignettePackage{SpectraStash}
+    %\VignetteDepends{MsExperiment,Spectra,SpectraStash,BiocStyle,alabaster.base,fs,xcms,faahKO}
+---
+
+```{r style, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(BiocStyle)
+```
+
+# Introduction
+
+Data objects in R can be serialized to disk in R's *rds* or *RData* format using
+the base R `save()` function and re-imported using the `load()` function. This
+binary file format can however not be used easily in other programming
+languages. The `r Biocpkg("MsStash")` package defines a basic framework to store
+and import mass spectrometry (MS) data objects in various storage formats aiming
+to simplify and facilitate data exchange between software. The *xcmsStash*
+package implements portable data storage formats (stashes) for result objects
+from Bioconductor's `r Biocpkp("xcms")` package. Supported stash formats are,
+next to storage in simple plain text files, also Bioconductor's *alabaster*
+format defined in the `r Biocpkg("alabaster.base")` and related packages.
+
+# Installation
+
+The package can be installed with the *BiocManager* package. To install
+*BiocManager* use `install.packages("BiocManager")` and, after that,
+`BiocManager::install("xcmsStash")` to install this package along with all
+required dependencies.
+
+# A stash for *xcms* result objects
+
+*xcms* result objects can be saved and restored through the `saveMsObject()` and
+`readMsObject()` functions into (or from) MS data stashes. At present,
+`XcmsExperiment` objects can be saved in the following stash formats:
+
+- *Alabaster*-based format: storage of MS data and *xcms* results using
+  Bioconductor's `r Biocpkg("alabaster.base")` framework saving files in HDF5
+  and JSON format. This stash format can be selected and configured by passing
+  an `AlabasterParam` to the `saveMsObject()` or `readMsObject()`
+  function. *alabaster*-based stashes also fully supports the `saveObject()` and
+  `readObject()` functions from *alabaster.base*.
+- Text file-based format: storage of the MS data and preprocessing results in
+  plain text files. This stash format can be selected and configured by passing
+  a `PlainTextParam` to the `saveMsObject()` and `readMsObject()` function.
+
+See also the vignette from the `r Biocpkg("MsStash")` package for details on the
+formats and the documentation and vignettes of the related
+`r Biocpkg("SpectraStash")` and `r Biocpkg("MsExperimentStash")` packages for
+information on storage of the result object's MS data.
+
+Below we load an example `XcmsExperiment` result object provided by the *xcms*
+package.
+
+```{r load-result, message = FALSE}
+library(xcms)
+library(MsExperiment)
+library(xcmsStash)
+
+xmse <- loadXcmsData("xmse")
+xmse
+```
+
+The `XcmsExperiment` thus contains the full results from a *xcms*-based LC-MS
+data preprocessing, chromatographic peaks, adjusted retention times and LC-MS
+features. We next store this object to a *xcmsStash* using the `saveMsObject()`
+function with an `AlabasterParam` parameter object to choose and configure the
+*alabaster*-based stash format. The location of the stash can be set
+with the `path` argument of this parameter object. For the present example we
+save the stash to a temporary folder.
+
+```{r}
+#' Define the location of the stash
+d <- file.path(tempfile(), "xmse_stash")
+
+#' Configure the format and location
+ap <- AlabasterParam(d)
+
+#' Save the `XcmsExperiment` object to the stash
+saveMsObject(xmse, ap)
+```
+
+`saveMsObject()` was storing, next to the results present in the
+`XcmsExperiment` object also all other experiment-related information from the
+MS data containers `MsExperiment` and `Spectra`, that the object contains.
+The content of the thus created stash folder is:
+
+```{r}
+library(fs)
+dir_tree(d)
+```
+
+An `XcmsExperiment` contains, next to the results from the *xcms* preprocessing,
+also the MS data of the experiment along with the experiment's sample
+information. All the experiment-relevant information is contained in a
+`MsExperiment` object (which the `XcmsExperiment` extends), with the actual MS
+data of the experiment being represented by a `Spectra` object. Calling
+`saveMsObject()` on a `XcmsExperiment` triggers the serialization mechanism of
+all these contained or extended MS data objects. In alabaster format each slot
+of an object is then stored to a sub-directory within the main *xcmsStash*
+directory. Folders *chrom_peak_data*, *chrom_peaks*, *feature_definitions* in
+the stash folder above contain the *xcms* preprocessing results, and the
+*xcms_experiment_process_history.json* file provides the full data processing
+history (all parameter objects from the object's `processHistory()` serialized
+in JSON format). All other folders contain the remaining MS experiment-relevant
+information in their respective *sub-stashes*. The *spectra* folder contains for
+example the experiment's MS data as a *SpectraStash* (defined in the
+`r Biocpkg("SpectraStash")` package).
+
+An `XcmsExperiment` can be restored from an *xcmsStash* with the
+`readMsObject()` function along with the parameter object specifying the format
+of the stash. To load the result object from the alabaster-format stash created
+above we use the `AlabasterParam()` parameter object providing the file path to
+the stash as argument. In addition we need to define the expected result
+(return) object with the first parameter to `readMsObject()` (in our case an
+`XcmsExperiment()` object).
+
+```{r load-result}
+#' Restore the result object
+res <- readMsObject(XcmsExperiment(), AlabasterParam(d))
+res
+```
+
+As mentioned above, *xcmsStash* folders are organized in a modular way with the
+different components being stored in sub-folders (*sub-stashes*). This allows to
+load only selected parts from the object instead of the full object. We can for
+example read only the MS experiment information from the stash, omitting the
+*xcms* preprocessing results.
+
+```{r load-ms-experiment}
+#' Load the MS experiment data from the stash
+mse <- readMsObject(MsExperiment(), AlabasterParam(d))
+mse
+```
+
+Or even just the `Spectra` object representing the MS data of the experiment
+from the *spectra* sub-folder of the stash directory:
+
+```{r load-spectra}
+#' Load the Spectra object from the stash
+library(Spectra)
+sps <- readMsObject(Spectra(), AlabasterParam(file.path(d, "spectra")))
+sps
+```
+
+Depending on the data backend the `Spectra` object of an `XcmsExperiment` uses,
+only references to the actual MS data might be stored within the *xcmsStash*. As
+shown by the print output above, the loaded `Spectra` object uses a
+`MsBackendMzR` backend to represent the MS data. This type of backend only loads
+general metadata information into memory and reads the actual MS data only
+on-demand from the original MS data files. We can use the
+`dataStorageBasePath()` function to get the location of these original MS data
+files for this `Spectra` object.
+
+```{r ms-data-location}
+#' Get the location of the original MS data files
+dataStorageBasePath(sps)
+```
+
+The MS data files are thus only referenced from the `Spectra` object but not
+part of the stash folder. If the original data files are moved to another
+location or if the *xcmsStash* folder is moved to a different computer, the
+location of these MS data files needs to be provided with the `spectraPath`
+parameter of the `readMsObject()` function to allow restoring the object from
+the stash (see documentation and vignette of the `r Biocpkg("SpectraStash")`
+package for more information).
+
+Alternatively, it is possible to store also the MS data files **into** the stash
+folder by passing `consolidate = TRUE` to the `saveMsObject()` call:
+
+```{r consolidate-stash}
+#' Store the result object consolidating the full data into the stash
+d2 <- file.path(tempdir(), "consolidated_xcms_stash")
+saveMsObject(xmse, AlabasterParam(d2), consolidate = TRUE)
+```
+
+Now the stash directory contains also the original MS data files, in that
+particular example stored within sub-folders *KO* and *WT* within the *spectra*
+sub-folder:
+
+```{r consolidate-fs}
+#' List the directory content of the consolidated *xcmsStash*
+dir_tree(d2)
+```
+
+While this allows generating self-contained portable stashes, their file size
+will be much larger, depending on the number and size of the original MS data
+files.
+
+Finally, the *xcmsStash* package implements also the `saveObject()` and
+`readObject()` methods from the `r Biocpkg("alabaster.base"`)* package. Thus,
+the full stash, or also selected parts of a result object can be read using
+these functions. Loading below for example the `Spectra` object of the *xcms*
+result object using *alabaster*'s `readObject()` function:
+
+```{r alabster-read}
+#' Read the `Spectra` object from the *xcmsStash*
+library(alabaster.base)
+sps <- readObject(file.path(d2, "spectra"))
+sps
+```
+
+Next to the alabaster-based stash format *xcmsStash* implements also a *plain
+text file*-based format (`PlainTextParam`), that stores all data as (human
+readable) tabulator delimited text files. Additional formats, such as the
+possibility to save *xcms* results in mzTab-M format (through the
+`r Biocpkg("RmzTabM")` package) will be added in future.
+
+# Session information
+
+```{r}
+sessionInfo()
+```

@@ -1,6 +1,6 @@
 Package: xcmsStash
 Title: Serialize and Restore xcms Result Objects in Interoperable File Formats
-Version: 0.97.0
+Version: 0.97.1
 Authors@R:
     c(person(given = "Johannes", family = "Rainer",
              email = "Johannes.Rainer@eurac.edu",
@@ -49,6 +49,7 @@ Remotes:
     RforMassSpectrometry/MsExperimentStash
 License: GPL-3
 Encoding: UTF-8
+VignetteBuilder: knitr
 BugReports: https://github.com/RforMassSpectrometry/xcmsStash/issues
 URL: https://github.com/RforMassSpectrometry/xcmsStash
 biocViews: Infrastructure, MassSpectrometry, Metabolomics, DataImport, Proteomics

@@ -2,6 +2,9 @@
 
 *A safe way to store your *xcms* result objects in interoperable formats.*
 
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Test-R-universe](https://github.com/RforMassSpectrometry/xcmsStash/workflows/Test-R-universe/badge.svg)](https://github.com/RforMassSpectrometry/xcmsStash/actions?query=workflow%3ATest-R-universe)
+[![:name status badge](https://rformassspectrometry.r-universe.dev/badges/:name)](https://rformassspectrometry.r-universe.dev/)
 [![license](https://img.shields.io/badge/license-GPL--3.0-brightgreen.svg)](https://opensource.org/license/gpl-3.0)
 
 ---
@@ -13,6 +16,17 @@ framework for flexible, language-agnostic import and export formats for mass
 spectrometry (MS) data objects in R. The **xcmsStash** package
 extends this framework and implements the functionality to stash (and restore)
 result objects from the *xcms* Bioconductor package.
+
+---
+
+## ⤵️ Installation
+
+To install the packages along with all its dependencies:
+
+```r
+install.packages("BiocManager")
+BiocManager::install("RforMassSpectrometry/xcmsStash")
+```
 
 ---
 
@@ -41,7 +55,7 @@ result objects from the *xcms* Bioconductor package.
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 We appreciate contributions of all kinds — from bug fixes and tests to
 documentation and new format support.
