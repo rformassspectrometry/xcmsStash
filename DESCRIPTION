@@ -26,7 +26,7 @@ Depends:
     R (>= 4.6.0),
     MsStash
 Imports:
-    xcms,
+    xcms (>= 4.11.2),
     MsExperimentStash,
     alabaster.matrix,
     jsonlite,
