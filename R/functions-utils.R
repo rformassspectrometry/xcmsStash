@@ -15,22 +15,6 @@
              " not found in ", path, call. = FALSE)
 }
 
-## #' @description
-## #'
-## #' Check if the file `x` already exists and throw an error if that's TRUE
-## #'
-## #' Used in:
-## #' - *R/XcmsExperimentFiles.R*: `saveMsObject,XcmsExperiment,PlainTextParam`.
-## #'
-## #' @noRd
-## .check_overwriting <- function(x) {
-##     if (file.exists(x))
-##         stop("The provided path contains already an MS object stash. ",
-##              "Overwriting an existing stash is not supported. Please remove ",
-##              "the directory defined with parameter 'path' first.",
-##              call. = FALSE)
-## }
-
 #' @importFrom jsonlite serializeJSON
 #'
 #' @importFrom jsonlite write_json
@@ -56,7 +40,7 @@
 #' @description
 #'
 #' Used in:
-#' - *R/XcmsExperriment.R*: `readAlabasterXcmsExperiment()`.
+#' - *R/XcmsExperiment.R*: `readAlabasterXcmsExperiment()`.
 #'
 #' @noRd
 .load_process_history <- function(x, path = character()) {

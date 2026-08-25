@@ -231,7 +231,3 @@ setMethod("readMsObject", signature(object = "XcmsExperiment",
           function(object, param, ...) {
               readAlabasterXcmsExperiment(param@path, ...)
           })
-
-################################################################################
-##    utility functions
-################################################################################
