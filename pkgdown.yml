@@ -1,0 +1,9 @@
+pandoc: 3.10.2
+pkgdown: 2.2.1.9000
+pkgdown_sha: f69b62a7e74b58b42170284b6f3f56c674e7a3f8
+articles:
+  xcmsStash: xcmsStash.html
+last_built: 2026-08-26T05:52Z
+urls:
+  reference: https://rformassspectrometry.github.io/xcmsStash/reference
+  article: https://rformassspectrometry.github.io/xcmsStash/articles
