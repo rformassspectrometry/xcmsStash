@@ -37,7 +37,7 @@ test_that("saveObject,XcmsExperiment works", {
     unlink(d, recursive = TRUE)
 })
 
-test_that("saveMsObject,readMsObject,XcmsExperiment,AlabasterParam", {
+test_that("saveMsObject,readMsObject,XcmsExperiment,AlabasterParam work", {
     d <- file.path(tempdir(), "xmse_stash")
 
     expect_no_error(saveMsObject(xmseg_filt, AlabasterParam(d),

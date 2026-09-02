@@ -51,7 +51,7 @@ stash formats:
   Bioconductor's `r Biocpkg("alabaster.base")` framework saving files in HDF5
   and JSON format. This stash format can be selected and configured by passing
   an `AlabasterParam` to the `saveMsObject()` or `readMsObject()`
-  function. *alabaster*-based stashes also fully supports the `saveObject()` and
+  function. *alabaster*-based stashes also fully support the `saveObject()` and
   `readObject()` functions from *alabaster.base*.
 - Text file-based format: storage of the MS data and preprocessing results in
   plain text files. This stash format can be selected and configured by passing
@@ -206,7 +206,7 @@ the full stash, or also selected parts of a result object can be read using
 these functions. Loading below for example the `Spectra` object of the *xcms*
 result object using *alabaster*'s `readObject()` function:
 
-```{r alabster-read}
+```{r alabaster-read}
 #' Read the `Spectra` object from the *xcmsStash*
 library(alabaster.base)
 sps <- readObject(file.path(d2, "spectra"))
