@@ -1,5 +1,10 @@
 # *MsExperimentStash* 0.97
 
+## Changes in version 0.97.2
+
+- Add read/write support for `XcmsExperimentHdf5` objects from/to alabaster- and
+  plain text file based formats.
+
 ## Changes in version 0.97.1
 
 - Add package vignette.

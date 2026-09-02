@@ -5,5 +5,11 @@
     ## XcmsExperiment
     registerValidateObjectFunction(
         "xcms_experiment", validateAlabasterXcmsExperiment)
-    registerReadObjectFunction("xcms_experiment", readAlabasterXcmsExperiment)
+    registerReadObjectFunction(
+        "xcms_experiment", readAlabasterXcmsExperiment)
+    ## XcmsExperimentHdf5
+    registerValidateObjectFunction(
+        "xcms_experiment_hdf5", validateAlabasterXcmsExperimentHdf5)
+    registerReadObjectFunction(
+        "xcms_experiment_hdf5", readAlabasterXcmsExperimentHdf5)
 }
