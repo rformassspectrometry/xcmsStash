@@ -1,6 +1,6 @@
 Package: xcmsStash
 Title: Serialize and Restore xcms Result Objects in Interoperable File Formats
-Version: 0.97.1
+Version: 0.97.2
 Authors@R:
     c(person(given = "Johannes", family = "Rainer",
              email = "Johannes.Rainer@eurac.edu",
@@ -26,17 +26,17 @@ Depends:
     R (>= 4.6.0),
     MsStash
 Imports:
-    xcms (>= 4.11.2),
+    xcms (>= 4.11.3),
     MsExperimentStash,
     alabaster.matrix,
     jsonlite,
     alabaster.base,
     methods,
+    MsExperiment,
     utils
 Suggests:
     BiocStyle,
     SpectraStash,
-    MsExperiment,
     MsDataHub,
     Spectra,
     testthat,
@@ -55,4 +55,4 @@ BugReports: https://github.com/RforMassSpectrometry/xcmsStash/issues
 URL: https://github.com/RforMassSpectrometry/xcmsStash
 biocViews: Infrastructure, MassSpectrometry, Metabolomics, DataImport, Proteomics
 Roxygen: list(markdown=TRUE)
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

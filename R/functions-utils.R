@@ -7,6 +7,8 @@
 #' Used in:
 #' - *R/XcmsExperiment.R*: `validateAlabasterXcmsExperiment()`
 #' - *R/XcmsExperiment.R*: `readMsObject,XcmsExperiment,PlainTextParam`
+#' - *R/XcmsExperimentHdf5.R*: `readMsObject,XcmsExperimentHdf5,PlainTextParam`
+#' - *R/XcmsExperimentHdf5.R*: `validateAlabasterXcmsExperimentHdf5()`
 #'
 #' @noRd
 .check_directory_content <- function(path, expected = character()) {
@@ -24,7 +26,10 @@
 #' @description
 #'
 #' Used in:
+#' - *R/XcmsExperiment.R*: `saveObject,XcmsExperiment,PlainTextParam`.
 #' - *R/XcmsExperiment.R*: `saveObject,XcmsExperiment,AlabasterParam`.
+#' - *R/XcmsExperimentHdf5.R*: `saveObject,XcmsExperimentHdf5,PlainTextParam`.
+#' - *R/XcmsExperimehtHdf5.R*: `saveObject,XcmsExperiment,AlabasterParam`.
 #'
 #' @noRd
 .write_process_history <- function(x, path = character()) {
@@ -41,6 +46,9 @@
 #'
 #' Used in:
 #' - *R/XcmsExperiment.R*: `readAlabasterXcmsExperiment()`.
+#' - *R/XcmsExperiment.R*: `readMsObject,XcmsExperiment,PlainTextParam`.
+#' - *R/XcmsExperimentHdf5.R*: `readAlabasterXcmsExperimentHdf5()`.
+#' - *R/XcmsExperimentHdf5.R*: `readMsObject,XcmsExperimentHdf5,PlainTextParam`
 #'
 #' @noRd
 .load_process_history <- function(x, path = character()) {
@@ -62,6 +70,9 @@
 #' Helper function to write chromatographic peak detection results from an
 #' `XcmsExperiment` object to files in txt file format.
 #'
+#' Used in:
+#' - *R/XcmsExperiment.R*: `saveMsObject,XcmsExperiment,PlainTextParam`
+#'
 #' @noRd
 .txt_write_chrom_peaks <- function(x, path = character()) {
     write.table(chromPeaks(x),
@@ -77,6 +88,9 @@
 #'
 #' Load exported chromatographic peak information (in txt file format) into
 #' the respective slots of the `XcmsExperiment` object `x`.
+#'
+#' Used in:
+#' - *R/XcmsExperiment.R*: `readMsObject,XcmsExperiment,PlainTextParam`
 #'
 #' @noRd
 .txt_load_chrom_peaks <- function(x, path = character()) {
@@ -104,6 +118,9 @@
 #' features and chromatographic peaks (i.e., the `featureDefinitions()`'
 #' `$peakidx` column).
 #'
+#' Used in:
+#' - *R/XcmsExperiment.R*: `saveMsObject,XcmsExperiment,PlainTextParam`
+#'
 #' @noRd
 .txt_write_features <- function(x, path = character()) {
     fts <- x@featureDefinitions
@@ -123,6 +140,9 @@
 #'
 #' Loads previously exported feature definitions from tab-delimited text files
 #' into the provided `XcmsExperiment` object `x`.
+#'
+#' Used in:
+#' - *R/XcmsExperiment.R*: `loadMsObject,XcmsExperiment,PlainTextParam`
 #'
 #' @noRd
 .txt_load_features <- function(x, path = character()) {

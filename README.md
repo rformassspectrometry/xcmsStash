@@ -11,9 +11,9 @@
 
 ## Overview
 
-[**MsStash**](https://github.com/RforMassSpectrometry/MsStash) defines a
-framework for flexible, language-agnostic import and export formats for mass
-spectrometry (MS) data objects in R. The **xcmsStash** package
+The [**MsStash**](https://github.com/RforMassSpectrometry/MsStash) Bioconductor
+package defines a framework for flexible, language-agnostic import and export
+formats for mass spectrometry (MS) data objects in R. The **xcmsStash** package
 extends this framework and implements the functionality to stash (and restore)
 result objects from the *xcms* Bioconductor package.
 
@@ -32,8 +32,8 @@ BiocManager::install("RforMassSpectrometry/xcmsStash")
 
 ## Key Features
 
-- 📦 Store/restore `XcmsExperiment` objects to/from portable, language agnostic
-   storage formats (stash)
+- 📦 Store/restore `XcmsExperiment` or `XcmsExperimentHdf5` objects to/from
+   portable, language agnostic storage formats (stash)
 - 🧩 Modular design via S4 **parameter classes** and generic methods
 - 🔄 Fully integrated with [Bioconductor](https://bioconductor.org)'s
   **alabaster.base** package.
@@ -52,6 +52,7 @@ BiocManager::install("RforMassSpectrometry/xcmsStash")
 ## Supported *xcms* result objects
 
 - `XcmsExperiment`
+- `XcmsExperimentHdf5`
 
 ---
 
